@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProductRepo {
     private final List<Product> products = new ArrayList<>();
@@ -10,5 +11,14 @@ public class ProductRepo {
 
     public boolean removeById(String id){
         return products.removeIf(p -> p.id().equals(id));
+    }
+
+    public  Optional<Product> getById(String id){
+        for(Product p : products){
+            if(p.id().equals(id)){
+                return Optional.of(p);
+            }
+        }
+        return Optional.empty();
     }
 }
