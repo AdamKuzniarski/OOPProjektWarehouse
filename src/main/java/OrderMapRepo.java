@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class OrderMapRepo {
+public class OrderMapRepo implements OrderRepoInterface {
     private final Map<String, Order> orders = new HashMap<>();
 
 
