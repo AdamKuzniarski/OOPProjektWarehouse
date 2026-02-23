@@ -19,7 +19,7 @@ public class ProductRepo {
                 return Optional.of(p);
             }
         }
-        return Optional.empty();
+        return Optional.empty();//null Sicherheit
     }
 
     public List<Product> getAll(){
