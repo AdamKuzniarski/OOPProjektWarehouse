@@ -21,4 +21,8 @@ public class ProductRepo {
         }
         return Optional.empty();
     }
+
+    public List<Product> getAll(){
+        return List.copyOf(products);
+    }
 }
