@@ -35,6 +35,7 @@ Optional<Integer> newList = list.stream()
         StudentRecord student2 = new StudentRecord("Bob", 22);
         student1 = student1.withAge(24);
         System.out.println(student1);
+        System.out.println(student1);
 
     }
 
