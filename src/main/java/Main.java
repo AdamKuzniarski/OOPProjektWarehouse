@@ -1,43 +1,39 @@
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 public class Main {
     public static void main(String[] args) {
-    List<Integer> list = new ArrayList<>();
 
-    list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
-        list.add(5);
-        list.add(6);
-        list.add(7);
-        list.add(8);
-        list.add(9);
-        list.add(10);
+        ProductRepo productRepo = new ProductRepo();
+        OrderRepoInterface orderRepo = new OrderMapRepo(); // oder OrderListRepo
 
-        for(int s : list){
-            System.out.println(s);
+        IdService idService = () -> UUID.randomUUID().toString();
+
+        ShopService shopService = new ShopService(productRepo, orderRepo, idService);
+
+        // Produkte anlegen
+        productRepo.add(new Product("1", "Apfel", 0.49));
+        productRepo.add(new Product("2", "Brot", 2.29));
+
+        // Bestellung anlegen (ok)
+        var order = shopService.addOrder(List.of(
+                new OrderItem("1", 2),
+                new OrderItem("2", 1)
+        ));
+        System.out.println("OK: " + order);
+
+        // Status updaten
+        var updated = shopService.updateOrder(order.id(), OrderStatus.COMPLETED);
+        System.out.println("UPDATED: " + updated);
+
+        // Filter via Streams
+        //System.out.println("COMPLETED Orders: " + shopService.getOrdersByStatus(OrderStatus.COMPLETED));
+
+        // Exception-Demo (Produkt existiert nicht)
+        try {
+            shopService.addOrder(List.of(new OrderItem("999", 1)));
+        } catch (ProductNotFoundException e) {
+            System.out.println("ERWARTETER FEHLER: " + e.getMessage());
         }
-
-
-Optional<Integer> newList = list.stream()
-        .filter(n -> n % 2 == 0)
-        .map(n -> n * 2)
-        .sorted()
-        .reduce((a,b) -> a + b);
-
-        System.out.println(newList);
-
-        StudentRecord student1 = new StudentRecord("Alice", 20);
-        StudentRecord student2 = new StudentRecord("Bob", 22);
-        student1 = student1.withAge(24);
-        System.out.println(student1);
-        System.out.println(student1);
-        System.out.println(student1);
-
     }
-
 }
