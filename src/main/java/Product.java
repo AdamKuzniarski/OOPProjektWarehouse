@@ -1,2 +1,6 @@
-public record Product(String id, String name, double price) {
+public record Product(
+        String id,
+        String name,
+        //Vielleicht BigDecimal
+        double price) {
 }

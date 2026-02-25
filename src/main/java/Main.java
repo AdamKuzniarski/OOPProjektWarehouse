@@ -1,13 +1,14 @@
 import java.util.List;
 import java.util.UUID;
 
-public class Main {
-    public static void main(String[] args) {
+class Main {
+    static void main() {
 
         ProductRepo productRepo = new ProductRepo();
         OrderRepoInterface orderRepo = new OrderMapRepo(); // oder OrderListRepo
 
-        IdService idService = () -> UUID.randomUUID().toString();
+        IdService idService = new IdServiceImpl();
+//        IdService idService = () -> UUID.randomUUID().toString();
 
         ShopService shopService = new ShopService(productRepo, orderRepo, idService);
 

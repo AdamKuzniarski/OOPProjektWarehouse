@@ -26,6 +26,7 @@ public class OrderListRepo implements OrderRepoInterface {
 
     @Override
     public List<Order> getAll() {
-        return List.copyOf(orders);
+        return new ArrayList<>(orders);
+//        return List.copyOf(orders);
     }
 }
