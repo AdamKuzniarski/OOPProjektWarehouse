@@ -36,6 +36,7 @@ Optional<Integer> newList = list.stream()
         student1 = student1.withAge(24);
         System.out.println(student1);
         System.out.println(student1);
+        System.out.println(student1);
 
     }
 
