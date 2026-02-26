@@ -1,4 +1,8 @@
+import lombok.With;
+
+import java.time.Instant;
 import java.util.List;
 
-public record Order(String id, List<OrderItem> items) {
+@With
+public record Order(String id, List<OrderItem> items, OrderStatus status, Instant OrderedAt) {
 }

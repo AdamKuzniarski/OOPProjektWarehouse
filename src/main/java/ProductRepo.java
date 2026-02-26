@@ -9,10 +9,6 @@ public class ProductRepo {
         products.add(product);
     }
 
-    public boolean removeById(String id){
-        return products.removeIf(p -> p.id().equals(id));
-    }
-
     public  Optional<Product> getById(String id){
         for(Product p : products){
             if(p.id().equals(id)){
@@ -20,9 +16,5 @@ public class ProductRepo {
             }
         }
         return Optional.empty();//null Sicherheit
-    }
-
-    public List<Product> getAll(){
-        return List.copyOf(products);
     }
 }

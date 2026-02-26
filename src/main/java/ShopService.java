@@ -1,50 +1,60 @@
+import lombok.RequiredArgsConstructor;
+
+import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class ShopService {
     private final ProductRepo productRepo;
     private final OrderRepoInterface orderRepo;
+    private final IdService idService;
 
-    public ShopService(ProductRepo productRepo, OrderRepoInterface orderRepo) {
-        this.productRepo = productRepo;
-        this.orderRepo = orderRepo;
+    //addOrder: wirft Exception, wenn Produkt nicht existiert
+//    public Order addOrder(List<OrderItem> items){
+//        String newOrderId = idService.generateId();
+//        return addOrder(newOrderId, items);
+//    }
+
+    public Order addOrder(List<OrderItem> items) {
+        validateItemsOrThrow(items);
+        String orderId = idService.generateId();
+        Order order = new Order(orderId, items, OrderStatus.PROCESSING, Instant.now());
+        orderRepo.add(order);
+        return order;
     }
 
-    public Optional<Order> placeOrder(String orderId, List<OrderItem> items) {
-        // Validierung der Bestellung
+    public Order updateOrder(String orderId, OrderStatus newStatus) {
+        Order existing = orderRepo.findById(orderId)
+                //Optimal wäre eine Custom Exception
+                .orElseThrow(() -> new NoSuchElementException("Bestellung nicht gefunden: " + orderId));
+
+        Order updated = existing.withStatus(newStatus);
+
+        //Vielleicht .update(updated);
+        orderRepo.removeById(orderId);
+        orderRepo.add(updated);
+
+        return updated;
+    }
+
+
+    private void validateItemsOrThrow(List<OrderItem> items) {
         if (items == null || items.isEmpty()) {
-            System.out.println("Bestellung abgelehnt: keine Artikel.");
-            return Optional.empty();
+            throw new IllegalArgumentException("Bestellung muss mindestens ein Produkt enthalten");
         }
         for (OrderItem item : items) {
             if (item.quantity() <= 0) {
-
-                System.out.println("Bestellung abgelehnt: Mente muss > 0 sein.(" + item.productId() + ")");
-                return Optional.empty();
+                throw new IllegalArgumentException("Menge muss größer als 0 sein: " + item);
             }
 
-            boolean exists = productRepo.getById(item.productId()).isPresent();
-            if (!exists) {
-                System.out.println("Bestelleung abgelehnt: Produkt existiert nicht: " + item.productId());
-                return Optional.empty();
+            Optional<Product> productOpt = productRepo.getById(item.productId());
+            if (productOpt.isEmpty()) {
+                throw new ProductNotFoundException(item.productId());
             }
-
-
         }
-        //alles ok, Bestellung anlegen
-        Order order = new Order(orderId, List.copyOf(items));
-        orderRepo.add(order);
-        return Optional.of(order);
-
     }
 
-    //Summe berechnen.
-    public double calculateTotal(Order order) {
-        double sum = 0.0;
-        for (OrderItem item : order.items()) {
-            Product product = productRepo.getById(item.productId()).orElseThrow();
-            sum += product.price() * item.quantity();
-        }
-        return sum;
-    }
+
 }
